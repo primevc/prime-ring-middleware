@@ -34,7 +34,7 @@
                   #_else (update-in req path (-> req :params (get cookie-name)))))))))
 
 
-(defn wrap-sid-session [session-store handler]
+(defn wrap-sid-session [handler session-store]
     (-> handler
       (wrap-secure-noir-session
         (assoc (if session-store {:store session-store} {})
