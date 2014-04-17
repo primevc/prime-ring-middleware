@@ -9,6 +9,7 @@
                   
                   [lib-noir "0.2.0"]
                   [containium "0.1.0-SNAPSHOT" :exclusions [boxure/clojure]]
+                  [ring "1.2.2" :exclusions [ring/ring-jetty-adapter]]
                 ]
 
   :pom-plugins [[com.theoryinpractise/clojure-maven-plugin "1.3.15"
