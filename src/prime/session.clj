@@ -26,12 +26,12 @@
 (defn wrap-sid-query-param
   "Uses the ?sid=.. query parameter value if there is no sid cookie"
   ([handler]
-    (wrap-sid-query-param "sid"))
+    (wrap-sid-query-param handler "sid"))
   ([handler cookie-name]
     (let [path [:cookies cookie-name :value]]
       (fn [req]
         (handler (if (get-in req path) req
-                  #_else (update-in req path (-> req :params (get cookie-name)))))))))
+                  #_else (assoc-in req path (-> req :params (get cookie-name)))))))))
 
 
 (defn wrap-sid-session [handler session-store]

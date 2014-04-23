@@ -4,6 +4,7 @@
 
 (ns prime.middleware
   (:require
+    [ring.middleware.params]
     [ring.middleware.resource]
     [ring.middleware.file-info]
     [ring.middleware.method-override]
@@ -16,10 +17,11 @@
   Option flags:
     :with-query-sid  Support session-IDs in the URL as query param: ?sid=..."
   [handler session-store & opts]
-  (let [opts (hash-set opts)]
+  (let [optset (apply hash-set opts)]
     (-> handler
       (ring.middleware.resource/wrap-resource "public")
       (ring.middleware.file-info/wrap-file-info)
       (ring.middleware.method-override/wrap-method-override)
-      (->when (opts :with-query-sid) wrap-sid-query-param)
-      (wrap-sid-session session-store))))
+      (wrap-sid-session session-store)
+      (->when (optset :with-query-sid) wrap-sid-query-param)
+      (ring.middleware.params/wrap-params))))
