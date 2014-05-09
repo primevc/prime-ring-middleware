@@ -5,6 +5,7 @@
 (ns prime.session
   (:require
     [ring.util :refer (https-request?)]
+    [ring.middleware.cookies :refer (cookies-request)]
     [noir.session :as session :refer (wrap-noir-session)]
     [containium.utils.session-store :refer (mk-session-store)]))
 
@@ -29,7 +30,7 @@
     (wrap-sid-query-param handler "sid"))
   ([handler cookie-name]
     (let [path [:cookies cookie-name :value]]
-      (fn [req]
+      #(let [req (cookies-request %)]
         (handler (if (get-in req path) req
                   #_else (assoc-in req path (-> req :params (get cookie-name)))))))))
 
