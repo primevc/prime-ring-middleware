@@ -9,7 +9,8 @@
     [ring.middleware.file-info]
     [ring.middleware.method-override]
     [ring.util :refer [->when]]
-    [prime.session :as session :refer (wrap-sid-session wrap-sid-query-param)]))
+    [prime.session :as session :refer (wrap-sid-session wrap-sid-query-param)]
+    [prone.middleware :as prone]))
 
 
 (defn wrap
@@ -25,3 +26,21 @@
       (wrap-sid-session session-store)
       (->when (optset :with-query-sid) wrap-sid-query-param)
       (ring.middleware.params/wrap-params))))
+
+
+(defn wrap-prone
+  [handler & [name]]
+  (alter-var-root #'prone.middleware/get-application-name
+                  (constantly (constantly (or name ""))))
+  (let [vos? (try (import 'prime.vo.ValueObject) true (catch Exception ex false))]
+    (when vos?
+      (eval
+       '(let [orig @#'prone.prep/prepare-for-serialization-1]
+          (alter-var-root #'prone.prep/prepare-for-serialization-1
+                          (constantly
+                           (fn [val]
+                             (cond
+                              (instance? prime.vo.ValueObject val) (into {} (seq val))
+                              (instance? org.bson.types.ObjectId val) (prime.types/to-String val)
+                              :else (orig val)))))))))
+  (prone/wrap-exceptions handler))
