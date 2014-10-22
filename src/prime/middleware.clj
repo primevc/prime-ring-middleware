@@ -10,7 +10,8 @@
     [ring.middleware.method-override]
     [ring.util :refer [->when]]
     [prime.session :as session :refer (wrap-sid-session wrap-sid-query-param)]
-    [prone.middleware :as prone]))
+    [prone.middleware :as prone]
+    [clojure.string :refer (lower-case)]))
 
 
 (defn wrap
@@ -60,3 +61,20 @@
                    uri))]
     (fn [request]
       (handler (update-in request [:uri] uri-fn)))))
+
+
+(defn wrap-redirect-www
+  "Returns a redirect response to the www-less counterpart, whenever a
+  www. subdomain is encountered."
+  [handler]
+  (fn [request]
+    (let [host (get-in request [:headers "host"])]
+      (if (.startsWith (lower-case host) "www.")
+        (let [url (str (subs host 4)
+                       (:context-path request)
+                       (:uri request)
+                       (when-let [qs (:query-string request)]
+                         (str "?" qs)))]
+          {:status 301
+           :headers {"Location" url}})
+        (handler request)))))
