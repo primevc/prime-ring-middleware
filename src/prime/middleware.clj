@@ -65,6 +65,7 @@
         (handler request)))))
 
 
+
 (defn wrap-redirect-www
   "Returns a redirect response to the www-less counterpart, whenever a
   www. subdomain is encountered."
