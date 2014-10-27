@@ -59,9 +59,9 @@
         (let [url (str (:context-path request)
                        without
                        (when-let [qs (:query-string request)]
-                         (str "?" qs)))])
-        {:status 302
-         :headers {"Location" url}})
+                         (str "?" qs)))]
+          {:status 302
+           :headers {"Location" url}}))
       (handler request))))
 
 
