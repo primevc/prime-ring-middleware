@@ -47,20 +47,22 @@
   (prone/wrap-exceptions handler))
 
 
-(defn wrap-remove-trailing-slash
-  "Modifies the request uri before calling the handler. Removes a
-  single trailing slash from the end of the uri if present.
-
-  Useful for handling optional trailing slashes until Compojure's
-  route matching syntax supports regex. Adapted from
-  http://stackoverflow.com/questions/8380468/compojure-regex-for-matching-a-trailing-slash"
+(defn wrap-redirect-trailing-slash
+  "Returns a redirect response when a trailing slash is encountered in
+  the URI, to the URI without the trailing slash."
   [handler]
   (let [uri-fn (fn [uri]
-                 (if (and (not (= "/" uri)) (.endsWith uri "/"))
-                   (subs uri 0 (dec (count uri)))
-                   uri))]
+                 (when (and (.endsWith uri "/") (not (= "/" uri)))
+                   (subs uri 0 (dec (count uri)))))]
     (fn [request]
-      (handler (update-in request [:uri] uri-fn)))))
+      (if-let [without (uri-fn (:uri request))]
+        (let [url (str (:context-path request)
+                       without
+                       (when-let [qs (:query-string request)]
+                         (str "?" qs)))])
+        {:status 302
+         :headers {"Location" url}})
+      (handler request))))
 
 
 (defn wrap-redirect-www
