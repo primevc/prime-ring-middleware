@@ -73,7 +73,9 @@
   (fn [request]
     (let [host (get-in request [:headers "host"])]
       (if (.startsWith (lower-case host) "www.")
-        (let [url (str (subs host 4)
+        (let [url (str (name (:scheme request))
+                       "://"
+                       (subs host 4)
                        (:context-path request)
                        (:uri request)
                        (when-let [qs (:query-string request)]
