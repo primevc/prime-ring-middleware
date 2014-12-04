@@ -51,7 +51,7 @@
   "Returns a redirect response when a trailing slash is encountered in
   the URI, to the URI without the trailing slash."
   [handler]
-  (let [uri-fn (fn [uri]
+  (let [uri-fn (fn [^String uri]
                  (when (and (.endsWith uri "/") (not (= "/" uri)))
                    (subs uri 0 (dec (count uri)))))]
     (fn [request]
