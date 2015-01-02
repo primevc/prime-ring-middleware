@@ -21,7 +21,8 @@
     (fn [req]
       (if (https-request? req)
         (secure-session-handler  req)
-        (regular-session-handler req)))))
+        (do (println "WARN: REQUESTED SESSION OVER HTTP")
+            (regular-session-handler req))))))
 
 
 (defn wrap-sid-query-param
