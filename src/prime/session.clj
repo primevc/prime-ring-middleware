@@ -16,13 +16,14 @@
 (defn wrap-secure-noir-session [f, opts]
   (let [secure-session-handler
         (wrap-noir-session f (merge opts {:cookie-attrs {:secure true :http-only true}}))
-        regular-session-handler
-        (wrap-noir-session f (merge opts {:cookie-attrs {:http-only true}}))]
+        ;; regular-session-handler
+        ;; (wrap-noir-session f (merge opts {:cookie-attrs {:http-only true}}))
+        ]
     (fn [req]
       (if (https-request? req)
-        (secure-session-handler  req)
-        (do (println "WARN: REQUESTED SESSION OVER HTTP")
-            (regular-session-handler req))))))
+        (secure-session-handler req)
+        (do (println "WARN: NO SESSION OVER HTTP")
+            (f req))))))
 
 
 (defn wrap-sid-query-param
