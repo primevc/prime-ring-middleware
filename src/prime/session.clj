@@ -41,8 +41,9 @@
                   #_else (assoc-in req path (-> req :params (get cookie-name)))))))))
 
 
-(defn wrap-sid-session [handler session-store]
+(defn wrap-sid-session [handler session-store allow-http?]
     (-> handler
       (wrap-secure-noir-session
         (assoc (if session-store {:store session-store} {})
+               :allow-http allow-http?
                :cookie-name "sid"))))
