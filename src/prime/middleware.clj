@@ -24,7 +24,7 @@
       (ring.middleware.resource/wrap-resource "public")
       (ring.middleware.file-info/wrap-file-info)
       (ring.middleware.method-override/wrap-method-override)
-      (wrap-sid-session session-store)
+      (wrap-sid-session session-store (boolean (:allow-http? optset)))
       (->when (optset :with-query-sid) wrap-sid-query-param)
       (ring.middleware.params/wrap-params))))
 
