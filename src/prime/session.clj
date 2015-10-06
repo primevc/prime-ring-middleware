@@ -26,7 +26,7 @@
         (if regular-session-handler
           (regular-session-handler req)
         ;else no session
-          (do (println "WARN: NO SESSION OVER HTTP")
+          (do ;(println "WARN: NO SESSION OVER HTTP")
               (f req)))))))
 
 
